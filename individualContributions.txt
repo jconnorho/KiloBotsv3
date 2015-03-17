@@ -1,0 +1,9 @@
+Jason Ho
+Pre-Gamers
+Individual contributions
+
+As far as coding goes, we all worked on the main file in the same room on the same computer, coming up with ideas and code to create the game. There were times where we would work on our project while away from each other, and then come together and merge them or decide what works best. Most of the coding was done on Vincent’s and Tanner’s computers during these meetings, however. I saw the role of just helping my team write the code and using my computer to search Phaser classes and examples to speed up the process.  
+Individually, I did some of the progress documents, and came up with the game idea. I completed the progress reports for our team which included everything related to the game and its mechanics. Since we changed our idea, here is how our game works: Jump has been changed to work for both SPACEBAR and Up arrow keys. When a new Kilobot is picked up, rather than using SPACEBAR to cycle through the Kilobot chain, the order of Kilobots in the chain does not change. FDSA keys are used to toggle a different color background tint and platform. F for black Kilobot/platform, D for red, S for green, and A for black. 
+A title screen has been added with ‘play’ and ‘instructions’ buttons that either launch the instructions page on how to play or straight into the game.
+There is no cheat sheet to get through the level quickly, it is a never-ending platformer with a time-limit that is high-score based, or farthest distance traveled (pixels). When time expires or the Kilobots hit the ground, the game restarts by calling respawn() and return back to the beginning platform.
+I am submitting my game on ecommons and github. Vincent was working on one last bug today so he will also submit.

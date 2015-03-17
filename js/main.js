@@ -14,7 +14,9 @@ $(document).ready(function() {
         game.load.image("redbackground", "../assets/BackgroundTileREDTINT.png");
         game.load.image("greenbackground", "../assets/BackgroundTileGREENTINT.png");
         game.load.image("bluebackground", "../assets/BackgroundTileBLUETINT.png");
-        game.load.image("mainmenu", "../assets/mainMenu.jpg");
+        game.load.image("mainmenu", "../assets/KiloMenu.png");
+        game.load.image("instruction", "../assets/Instructions.png");
+
 
         game.load.image("blackkilobot", "../assets/KILOBLACK.png");
         game.load.image("redkilobot", "../assets/KILORED.png");
@@ -28,13 +30,11 @@ $(document).ready(function() {
 
         game.load.image("yellowclock", "../assets/yellowclock.png");
 
-        game.load.image("playButton", "../assets/playButton.png");
-        game.load.image("instructionsButton", "../assets/instructionsButton.png");
-        //game.load.image("retryButton", "../assets/retryButton.jpg");
-        //game.load.image("menuButton", "../assets/menuButton.png");
+        game.load.image("startButton", "../assets/StartButton.png");
+        game.load.image("instructionsButton", "../assets/InstructionsButton.png");
 
-        game.load.audio("beat", "../assets/beat.mp3");
         game.load.audio("jump", "../assets/punch.mp3");
+        game.load.audio("beat", "../assets/beat.mp3");
     }
     
     // background variables
@@ -42,14 +42,14 @@ $(document).ready(function() {
     var redbackground;
     var greenbackground;
     var bluebackground;
+    var mainmenu;
+    var instruction;
 
     var startTime;
 
     // buttons
-        var playButton;
-        var instructionButton;
-        //var menuButton;
-        //var retryButton;
+    var startButton;
+    var instructionButton;
     
     // KiloBot Status
     var kilobots;
@@ -89,6 +89,7 @@ $(document).ready(function() {
     var maxDistance = 0;
     var score;
     var highScore = 0;
+    var topScore = 0;
 
     // TimerObject Variables
     var incTime;
@@ -108,7 +109,8 @@ $(document).ready(function() {
         redbackground = game.add.tileSprite(0, 0, levelWidth, levelHeight, "redbackground");
         greenbackground = game.add.tileSprite(0, 0, levelWidth, levelHeight, "greenbackground");
         bluebackground = game.add.tileSprite(0, 0, levelWidth, levelHeight, "bluebackground");
-        mainmenu = game.add.tileSprite(0, 75, levelWidth, 586, "mainmenu");
+        mainmenu = game.add.tileSprite(0, 0, 1200, 750, "mainmenu");
+        instruction = game.add.tileSprite(0, 0, 1200, 750, "instruction");
         
         // set world boundaries to the global width, height
         game.world.setBounds(0, 0, levelWidth, levelHeight);
@@ -170,10 +172,6 @@ $(document).ready(function() {
         // call respawn to initialize the rest of the game
         //respawn();
         menu();
-
-        game.music = game.add.audio('beat');
-        game.music.play();
-
     }
     
     function update() {
@@ -195,7 +193,7 @@ $(document).ready(function() {
 
         if(!start) {
             for(var i=0; i<kilobots.children.length; i++) {
-                if(kilobots.getAt(i).body.touching.down && jumpKilobot.isDown) { // CHANGE CONDITION FOR STARTING/RESTARTING GAME
+                if(kilobots.getAt(i).body.touching.down) { // CHANGE CONDITION FOR STARTING/RESTARTING GAME
                     start = true;
                     startTime = game.time.totalElapsedSeconds();
                 } else {
@@ -306,9 +304,6 @@ $(document).ready(function() {
             // update score
             updateScore(kilobots.children[0].body.x);
 
-            //update high score
-            updateHighScore(kilobots.children[0].body.x);
-
             // game over state
             if(kilobots.getAt(0).body.onFloor() || timer == 0) {
                 kilobots.removeAll(true);
@@ -347,9 +342,10 @@ $(document).ready(function() {
         num++;
 
         //remove buttons
-        playButton.visible = false;
+        startButton.visible = false;
         instructionButton.visible = false;
         mainmenu.alpha = 0;
+        instruction.alpha = 0;
         blackbackground.alpha = 1;
         time.alpha = 1;
         score.alpha = 1;
@@ -378,10 +374,9 @@ $(document).ready(function() {
         greenbackground.alpha = 0;
         bluebackground.alpha = 0;
 
-        /*game.music = game.add.audio('beat');
-        game.music.play();*/
+        game.music = game.add.audio('beat');
+        game.music.play();
 
-        game.music.restart();
 
     }
 
@@ -487,20 +482,25 @@ $(document).ready(function() {
                 platform = platformsBlue.create(nextX, nextY, color);
                 platformData = platformsBlue.getAt(platformsBlue.length-1);
             }
+
+            if(i == 4 || i == 14 || i == 34) {
+                prevWidth = 200;
+            }
+
             platform.scale.setTo(prevWidth/600, prevHeight/182);
             platform.body.immovable = true;
 
             // Generate kilobot at platform i
             if(i == 4) {
-                generateKilobot('redkilobot', nextX + 50, nextY-50);
+                generateKilobot('redkilobot', nextX+100, nextY-50);
             }
 
             if(i == 14) {
-                generateKilobot('greenkilobot', nextX + 50, nextY-50);
+                generateKilobot('greenkilobot', nextX+100, nextY-50);
             }
 
             if(i == 34) {
-                generateKilobot('bluekilobot', nextX + 50, nextY-50);
+                generateKilobot('bluekilobot', nextX+100, nextY-50);
             }
 
             // Generate time at platform i
@@ -518,11 +518,9 @@ $(document).ready(function() {
         kilocolor.push(undiscovered.getAt(0).key);
         undiscovered.remove(bot, true);
         kilocolor[num] = 1;
+        coords[num-1] = [];
+        coords.push([]);
         num++;
-        coords = [];
-        for(var i=0; i<kilobots.children.length; i++) {
-            coords.push([]);
-        }
     }
 
     function pickTimer(player, incTime){
@@ -542,13 +540,10 @@ $(document).ready(function() {
             maxDistance = kilobotX;
             points = kilobotX;
             score.setText("Score: " + (Math.floor(points)-50));
-        }
-    }
-
-    function updateHighScore(kilobotX) {
-        if(score > localStorage.getItem("highScore")) {
-            localStorage.setItem("highScore", highScore);
-            highScore.setText("High Score: " + Math.floor(points)-50);
+            if(points > topScore){
+                topScore = points;
+                highScore.setText("High Score: " + (Math.floor(topScore)-50));
+            }
         }
     }
 
@@ -560,23 +555,22 @@ $(document).ready(function() {
         time.alpha = 0;
         score.alpha = 0;
         highScore.alpha = 0;
-
-        playButton = game.add.button(575, 470, 'playButton', respawn, this);
-        instructionButton = game.add.button(575, 550, 'instructionsButton', instructions, this);
+        instruction.alpha = 0;
+        startButton = game.add.button(435, 350, 'startButton', respawn, this);
+        instructionButton = game.add.button(295, 500, 'instructionsButton', instructions, this);
     }
 
     function instructions(){
-        game.world.remove(playButton);
+        game.world.remove(startButton);
         game.world.remove(instructionButton);
-
-        playButton = game.add.button(200, 600, 'playButton', respawn, this);
-        var style = { font: "20px Arial", fill: "#2C2F9C", align: "center", wordWrap: true, wordWrapWidth:450};
-        var text = game.add.text(game.world.centerX, game.world.centerY, "Instructions: Use LEFT and RIGHT arrow keys to move. UP arrow and SPACEBAR both jump. When you pick up other color Kilobots, use keys F D S A to switch colors. F for black, D for red, S for green, and A for blue. You can switch in the air, too. Click 'play' to play. Then, tap SPACEBAR to ACTUALLY play. Reach as far as possible before time expires. Good luck!", style);
-        text.anchor.set(0.5);
-        //menuButton = game.add.button(game.world.centerX - 95, 600, 'menuButton', menu, this);
+        instruction.alpha = 1;
+        mainmenu.alpha = 0;
+        // new x, y for play
+        startButton = game.add.button(515, 680, 'startButton', respawn, this);
+        startButton.scale.setTo(0.5, 0.5);
     }
 
-   /* function gameOver() {
+    function gameOver() {
         blackbackground.alpha = 0;
         redbackground.alpha = 0;
         greenbackground.alpha = 0;
@@ -588,5 +582,5 @@ $(document).ready(function() {
 
     function retry() {
         retryButton = game.add.button(game.world.centerX, game.world.centerY, 'retryButton', respawn, this);
-    }*/
+    }
 });
